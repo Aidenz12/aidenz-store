@@ -82,6 +82,8 @@ h2 { font-size: clamp(30px, 4vw, 43px); line-height: 1.1; letter-spacing: -.04em
 .product-card .product-desc { margin: 0 0 22px; font-size: 11px; color: #a79bb8; }
 .product-price { font-size: 24px; font-weight: 850; letter-spacing: -.04em; }
 .product-price small { font-size: 10px; font-weight: 500; color: #9f94b2; letter-spacing: 0; }
+.product-normal-price { display: block; color: #8e839f; font-size: 13px; font-weight: 500; letter-spacing: 0; margin-bottom: 3px; }
+.product-sale-price { display: block; color: #aef0c1; font-size: 24px; font-weight: 850; letter-spacing: -.04em; }
 .product-card button { width: 100%; margin-top: 21px; border: 1px solid #7e52ad; background: #8c4bd51a; color: #e5d4ff; border-radius: 9px; padding: 12px; font-weight: 750; cursor: pointer; }
 .product-card button:hover { background: #9a59e9; color: white; }
 .product-card.featured button { background: linear-gradient(100deg, #a969ff, #8143e3); border-color: transparent; color: white; }
@@ -163,3 +165,26 @@ h2 { font-size: clamp(30px, 4vw, 43px); line-height: 1.1; letter-spacing: -.04em
   .site-footer > p { line-height: 1.6; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: .01ms !important; } }
+
+/* Order payment options and reviews */
+.payment-panel { grid-column: 1 / -1; margin-top: -45px; padding: 28px; border: 1px solid #315071; border-radius: 18px; background: linear-gradient(145deg,#101d31,#0c1424); }
+.payment-panel[hidden] { display: none; }
+.payment-panel h3 { font-size: 25px; margin: 12px 0; }
+.payment-intro,.payment-warning { color: var(--muted); line-height: 1.75; font-size: 13px; }
+.qr-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; min-height: 190px; margin: 22px 0; padding: 24px; border: 1px dashed #4774a1; border-radius: 14px; background: #0b1424; text-align: center; }
+.qr-icon { display: grid; place-items: center; width: 62px; height: 62px; border-radius: 15px; background: #142c48; color: #75baff; font-size: 34px; }
+.qr-placeholder span { color: #9fb2ca; font-size: 12px; }
+.payment-total { display:flex; justify-content:space-between; gap:16px; padding:18px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); color:var(--muted); }
+.payment-total strong { color:#35e2b2; font-size:24px; }
+.payment-actions { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:22px; }
+.payment-actions .button { min-height:56px; }
+.save-status { color:#a8d8ff; font-size:12px; line-height:1.7; }
+.reviews-section { padding-top: 20px; padding-bottom: 90px; }
+.review-card { padding:24px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(145deg,#1b1429,#110d1b); }
+.review-top { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.review-avatar { width:44px; height:44px; display:grid; place-items:center; border-radius:50%; background:#245a91; font-weight:800; }
+.review-top strong,.review-top small { display:block; }
+.review-top small { margin-top:4px; color:var(--muted); font-size:11px; }
+.review-stars { margin-left:auto; color:#ffc94a; font-size:21px; letter-spacing:1px; }
+.review-card p { color:#c7bed7; line-height:1.8; font-size:13px; }
+@media(max-width:650px) { .payment-panel { margin-top:-30px; padding:20px; } .payment-actions { grid-template-columns:1fr; } .payment-total strong { font-size:20px; } .review-stars { margin-left:0; width:100%; } }

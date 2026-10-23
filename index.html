@@ -57,10 +57,10 @@
     <section class="section-wrap products-section" id="paket">
       <div class="section-heading">
         <div><div class="eyebrow">PILIH SESUAI KEBUTUHAN</div><h2>Paket <span>Robux</span></h2></div>
-        <p>Harga di bawah adalah <b>contoh awal</b>. Ubah ke harga jual dan paket yang benar-benar tersedia sebelum dipublikasikan.</p>
+        <p>Pilih nominal Robux yang kamu butuhkan. Pastikan detail dan total pesanan dikonfirmasi admin sebelum membayar.</p>
       </div>
       <div class="product-grid" id="product-grid"></div>
-      <p class="small-note">Ketersediaan, jumlah Robux yang diterima, dan estimasi proses harus dikonfirmasi admin sebelum pembayaran.</p>
+      <p class="small-note">Promo diskon sekitar 15%: tersedia paket 80 sampai 2.000 Robux. Harga normal dicoret dan harga promo ditampilkan; paket dan harga tetap dikonfirmasi admin sebelum pembayaran.</p>
     </section>
 
     <section class="how-section" id="cara">
@@ -100,10 +100,28 @@
         </select>
         <label for="customer-note">Catatan <span class="optional">opsional</span></label>
         <textarea id="customer-note" name="note" rows="3" maxlength="250" placeholder="Catatan untuk admin (opsional)"></textarea>
-        <button class="button button-primary submit-button" type="submit">Lanjut ke WhatsApp <span>↗</span></button>
+        <button class="button button-primary submit-button" type="submit">Lanjut ke pembayaran <span>↓</span></button>
         <p class="form-disclaimer">Belum ada pembayaran otomatis di website ini. Jangan transfer sebelum admin mengonfirmasi total dan instruksi pembayaran.</p>
         <p class="form-error" id="form-error" role="alert" hidden></p>
+        <p class="form-disclaimer">Setelah lanjut, detail pesanan dan bagian pembayaran akan muncul di bawah.</p>
       </form>
+      <section class="payment-panel" id="payment-panel" hidden aria-live="polite">
+        <div class="eyebrow">LANGKAH BERIKUTNYA</div>
+        <h3>3. Pembayaran QRIS</h3>
+        <p class="payment-intro">Periksa kembali pesanan. QRIS resmi toko akan ditampilkan di sini setelah gambar QRIS tersedia. Jangan membayar ke QR yang belum terverifikasi.</p>
+        <div class="qr-placeholder"><div class="qr-icon">▦</div><strong>QRIS Aidenz Store</strong><span>Gambar QRIS akan ditambahkan besok</span></div>
+        <div class="payment-total"><span>Total pembayaran</span><strong id="payment-total">—</strong></div>
+        <p class="payment-warning">Nominal dan nama merchant harus sesuai sebelum konfirmasi pembayaran.</p>
+        <div class="payment-actions">
+          <button class="button button-primary" id="save-order-button" type="button">Buat Pesanan &amp; Simpan</button>
+          <button class="button button-primary" id="whatsapp-order-button" type="button">Kirim Pesanan via WhatsApp ↗</button>
+        </div>
+        <p class="save-status" id="save-status" role="status"></p>
+      </section>
+    </section>
+    <section class="section-wrap reviews-section" id="ulasan">
+      <div class="section-heading"><div><div class="eyebrow">ULASAN TOKO</div><h2>Ulasan <span>Pilihan</span></h2></div><p>Rating tampilan 5 bintang. Ulasan pelanggan asli dapat ditambahkan setelah ada transaksi terverifikasi.</p></div>
+      <article class="review-card"><div class="review-top"><div class="review-avatar">AS</div><div><strong>Pelanggan Aidenz Store</strong><small>Contoh tampilan ulasan</small></div><span class="review-stars" aria-label="5 dari 5 bintang">★★★★★</span></div><p>★★★★★ — Bagian ulasan ini adalah contoh desain, bukan testimoni pelanggan nyata.</p></article>
     </section>
   </main>
 

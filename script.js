@@ -100,42 +100,104 @@ document.getElementById("order-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const username = document.getElementById("roblox-username").value.trim();
   const product = STORE_CONFIG.products.find((item) => item.id === select.value);
-  const payment = document.getElementById("payment-select").value;
+  const paymentChoice = document.getElementById("payment-select").value;
   const note = document.getElementById("customer-note").value.trim();
   const error = document.getElementById("form-error");
+  const panel = document.getElementById("payment-panel");
   error.hidden = true;
   error.textContent = "";
-  if (!username || !product || !payment) {
-    error.textContent = "Mohon lengkapi username, paket, dan metode pembayaran.";
+  panel.hidden = true;
+  if (!username || !product || !["qris", "whatsapp"].includes(paymentChoice)) {
+    error.textContent = "Mohon isi username, pilih paket, dan pilih salah satu dari dua opsi pembayaran.";
     error.hidden = false;
     return;
   }
+  const paymentLabel = paymentChoice === "qris" ? "QRIS" : "Chat admin WhatsApp";
   currentOrder = {
     id: `ADZ-${Date.now().toString().slice(-8)}`,
     username, productId: product.id, productName: product.name,
-    price: product.price, payment, note, createdAt: new Date().toISOString(), status: "Menunggu pembayaran"
+    price: product.price, payment: paymentLabel, note,
+    createdAt: new Date().toISOString(), status: "Menunggu konfirmasi"
   };
-  document.getElementById("payment-total").textContent = rupiah(product.price);
-  document.getElementById("payment-panel").hidden = false;
-  document.getElementById("save-status").textContent = `Nomor pesanan: ${currentOrder.id}`;
-  document.getElementById("payment-panel").scrollIntoView({behavior:"smooth", block:"start"});
-});
-
-document.getElementById("save-order-button").addEventListener("click", () => {
-  const status = document.getElementById("save-status");
-  if (!currentOrder) { status.textContent = "Isi formulir pesanan terlebih dahulu."; return; }
-  try {
-    const orders = JSON.parse(localStorage.getItem("aidenzStoreOrders") || "[]");
-    if (!orders.some(order => order.id === currentOrder.id)) orders.push(currentOrder);
-    localStorage.setItem("aidenzStoreOrders", JSON.stringify(orders));
-    status.textContent = `Pesanan ${currentOrder.id} tersimpan di perangkat ini. Simpan nomor pesanan untuk pengecekan.`;
-  } catch (e) {
-    status.textContent = `Nomor pesanan: ${currentOrder.id}. Penyimpanan perangkat tidak tersedia, catat nomor ini.`;
+  if (paymentChoice === "whatsapp") {
+    const url = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodeURIComponent(makeOrderMessage(currentOrder))}`;
+    window.location.href = url;
+    return;
   }
+  document.getElementById("payment-total").textContent = rupiah(product.price);
+  document.getElementById("save-status").textContent = `Nomor pesanan: ${currentOrder.id} · Simpan nomor ini untuk konfirmasi admin.`;
+  panel.hidden = false;
+  panel.scrollIntoView({behavior:"smooth", block:"start"});
 });
 
-document.getElementById("whatsapp-order-button").addEventListener("click", () => {
-  if (!currentOrder) return;
-  const url = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodeURIComponent(makeOrderMessage(currentOrder))}`;
-  window.open(url, "_blank", "noopener,noreferrer");
+// ULASAN ASLI: hanya masukkan ulasan pelanggan yang benar-benar diterima dan disetujui.
+// Untuk menambahkan ulasan terverifikasi, isi array ini dengan data pelanggan yang telah memberi izin.
+// Contoh struktur: { name: "Nama", packageName: "80 Robux", rating: 5, text: "Teks ulasan asli" }
+const approvedReviews = [];
+const reviewList = document.getElementById("review-list");
+const reviewStatus = document.getElementById("review-status");
+const reviewPackageSelect = document.getElementById("review-package");
+
+STORE_CONFIG.products.forEach((product) => {
+  const option = document.createElement("option");
+  option.value = product.name;
+  option.textContent = product.name;
+  reviewPackageSelect.appendChild(option);
 });
+
+function renderApprovedReviews() {
+  reviewList.replaceChildren();
+  if (approvedReviews.length === 0) {
+    reviewStatus.hidden = false;
+    reviewStatus.textContent = "Belum ada ulasan pelanggan yang ditampilkan. Jadilah pelanggan pertama yang mengirim ulasan!";
+    return;
+  }
+  reviewStatus.hidden = true;
+  approvedReviews.forEach((review) => {
+    const card = document.createElement("article");
+    card.className = "review-card";
+    const top = document.createElement("div");
+    top.className = "review-top";
+    const avatar = document.createElement("div");
+    avatar.className = "review-avatar";
+    avatar.textContent = review.name.trim().split(/\s+/).map(part => part[0]).join("").slice(0, 2).toUpperCase();
+    const identity = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = review.name;
+    const meta = document.createElement("small");
+    meta.textContent = `Paket: ${review.packageName}`;
+    identity.append(name, meta);
+    const stars = document.createElement("span");
+    stars.className = "review-stars";
+    const rating = Math.max(1, Math.min(5, Number(review.rating) || 5));
+    stars.setAttribute("aria-label", `Rating ${rating} dari 5 bintang`);
+    stars.textContent = "★".repeat(rating) + "☆".repeat(5 - rating);
+    top.append(avatar, identity, stars);
+    const paragraph = document.createElement("p");
+    paragraph.textContent = review.text;
+    card.append(top, paragraph);
+    reviewList.appendChild(card);
+  });
+}
+
+// GitHub Pages bersifat statis: kirim ulasan ke admin untuk pemeriksaan,
+// lalu admin menambahkan ulasan yang disetujui ke approvedReviews.
+document.getElementById("review-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const name = document.getElementById("review-name").value.trim();
+  const packageName = reviewPackageSelect.value;
+  const rating = document.getElementById("review-rating").value;
+  const text = document.getElementById("review-text").value.trim();
+  if (!name || !packageName || !rating || !text) return;
+  const message = [
+    "Halo Aidenz Store, saya ingin mengirim ulasan pesanan.", "",
+    `Nama tampilan: ${name}`,
+    `Paket yang dibeli: ${packageName}`,
+    `Rating: ${rating}/5`,
+    `Ulasan: ${text}`, "",
+    "Mohon periksa ulasan ini. Saya mengizinkan nama tampilan dan ulasan ini ditampilkan di website jika disetujui."
+  ].join("\n");
+  window.location.href = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
+});
+
+renderApprovedReviews();

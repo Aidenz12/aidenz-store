@@ -81,7 +81,7 @@
       <div class="order-aside">
         <div class="eyebrow">LET'S GET YOU STARTED</div>
         <h2>Siap buat<br><span>pesanan?</span></h2>
-        <p>Isi form ini. WhatsApp akan terbuka dengan ringkasan pesanan untuk dikonfirmasi admin.</p>
+        <p>Isi detail pesanan, lalu pilih salah satu dari dua opsi: bayar QRIS atau langsung chat admin WhatsApp.</p>
         <div class="safety-note"><span>!</span><p><b>Keamanan akun</b><br>Admin tidak memerlukan password Roblox atau kode OTP kamu.</p></div>
       </div>
       <form class="order-form" id="order-form">
@@ -92,36 +92,44 @@
         <select id="package-select" name="package" required></select>
         <label for="payment-select">Metode pembayaran pilihan</label>
         <select id="payment-select" name="payment" required>
-          <option value="">Pilih metode</option>
-          <option>DANA (konfirmasi admin)</option>
-          <option>GoPay (konfirmasi admin)</option>
-          <option>Transfer bank (konfirmasi admin)</option>
-          <option>QRIS jika tersedia dari admin</option>
+          <option value="">Pilih salah satu opsi</option>
+          <option value="qris">1. Bayar langsung dengan QRIS</option>
+          <option value="whatsapp">2. Chat admin WhatsApp</option>
         </select>
         <label for="customer-note">Catatan <span class="optional">opsional</span></label>
         <textarea id="customer-note" name="note" rows="3" maxlength="250" placeholder="Catatan untuk admin (opsional)"></textarea>
-        <button class="button button-primary submit-button" type="submit">Lanjut ke pembayaran <span>↓</span></button>
-        <p class="form-disclaimer">Belum ada pembayaran otomatis di website ini. Jangan transfer sebelum admin mengonfirmasi total dan instruksi pembayaran.</p>
+        <button class="button button-primary submit-button" type="submit">Lanjutkan <span>→</span></button>
+        <p class="form-disclaimer">Pilih QRIS untuk melihat kode pembayaran, atau WhatsApp untuk langsung menghubungi admin. Website tidak memverifikasi pembayaran secara otomatis.</p>
         <p class="form-error" id="form-error" role="alert" hidden></p>
         <p class="form-disclaimer">Setelah lanjut, detail pesanan dan bagian pembayaran akan muncul di bawah.</p>
       </form>
       <section class="payment-panel" id="payment-panel" hidden aria-live="polite">
         <div class="eyebrow">LANGKAH BERIKUTNYA</div>
-        <h3>3. Pembayaran QRIS</h3>
-        <p class="payment-intro">Periksa kembali pesanan. QRIS resmi toko akan ditampilkan di sini setelah gambar QRIS tersedia. Jangan membayar ke QR yang belum terverifikasi.</p>
-        <div class="qr-placeholder"><div class="qr-icon">▦</div><strong>QRIS Aidenz Store</strong><span>Gambar QRIS akan ditambahkan besok</span></div>
-        <div class="payment-total"><span>Total pembayaran</span><strong id="payment-total">—</strong></div>
-        <p class="payment-warning">Nominal dan nama merchant harus sesuai sebelum konfirmasi pembayaran.</p>
-        <div class="payment-actions">
-          <button class="button button-primary" id="save-order-button" type="button">Buat Pesanan &amp; Simpan</button>
-          <button class="button button-primary" id="whatsapp-order-button" type="button">Kirim Pesanan via WhatsApp ↗</button>
-        </div>
+        <h3>QRIS — Selesaikan pembayaran</h3>
+        <p class="payment-intro">Pindai QRIS di bawah menggunakan aplikasi pembayaran yang mendukung QRIS. Pastikan nama merchant dan nominal sesuai sebelum membayar.</p>
+        <div class="qris-image-wrap"><img class="qris-image" src="assets/qris-jaya-sejahtera.jpg" alt="Kode pembayaran QRIS yang disediakan untuk Aidenz Store" loading="lazy"><p class="qris-merchant-note">Periksa nama merchant yang muncul di aplikasi pembayaran sebelum mengonfirmasi.</p></div>
+        <div class="payment-total"><span>Total pesanan</span><strong id="payment-total">—</strong></div>
+        <p class="payment-warning">QRIS dapat meminta nominal dimasukkan secara manual. Periksa total pesanan sebelum membayar. Status pembayaran perlu dikonfirmasi admin.</p>
         <p class="save-status" id="save-status" role="status"></p>
       </section>
     </section>
     <section class="section-wrap reviews-section" id="ulasan">
-      <div class="section-heading"><div><div class="eyebrow">ULASAN TOKO</div><h2>Ulasan <span>Pilihan</span></h2></div><p>Rating tampilan 5 bintang. Ulasan pelanggan asli dapat ditambahkan setelah ada transaksi terverifikasi.</p></div>
-      <article class="review-card"><div class="review-top"><div class="review-avatar">AS</div><div><strong>Pelanggan Aidenz Store</strong><small>Contoh tampilan ulasan</small></div><span class="review-stars" aria-label="5 dari 5 bintang">★★★★★</span></div><p>★★★★★ — Bagian ulasan ini adalah contoh desain, bukan testimoni pelanggan nyata.</p></article>
+      <div class="section-heading"><div><div class="eyebrow">ULASAN PELANGGAN</div><h2>Ulasan <span>Pelanggan</span></h2></div><p>Ulasan yang ditampilkan di sini adalah ulasan pelanggan yang sudah diperiksa oleh admin.</p></div>
+      <div class="review-status" id="review-status" role="status">Belum ada ulasan pelanggan yang ditampilkan. Jadilah pelanggan pertama yang mengirim ulasan!</div>
+      <div class="review-list" id="review-list" aria-live="polite"></div>
+      <form class="review-form" id="review-form">
+        <div class="form-heading"><h3>Kirim ulasan kamu</h3><span class="form-step">ULASAN PELANGGAN</span></div>
+        <label for="review-name">Nama atau nama panggilan</label>
+        <input id="review-name" name="name" type="text" maxlength="50" placeholder="Nama yang ingin ditampilkan" required>
+        <label for="review-package">Paket yang dibeli</label>
+        <select id="review-package" name="package" required><option value="">Pilih paket yang dibeli</option></select>
+        <label for="review-rating">Rating</label>
+        <select id="review-rating" name="rating" required><option value="5">★★★★★ — 5 bintang</option><option value="4">★★★★☆ — 4 bintang</option><option value="3">★★★☆☆ — 3 bintang</option><option value="2">★★☆☆☆ — 2 bintang</option><option value="1">★☆☆☆☆ — 1 bintang</option></select>
+        <label for="review-text">Ulasan jujur kamu</label>
+        <textarea id="review-text" name="review" rows="4" maxlength="500" placeholder="Ceritakan pengalaman setelah pesanan selesai..." required></textarea>
+        <button class="button button-primary submit-button" type="submit">Kirim ulasan ke admin <span>→</span></button>
+        <p class="form-disclaimer">Ulasan akan dikirim ke WhatsApp admin untuk diperiksa. Ulasan baru ditampilkan di website setelah disetujui admin.</p>
+      </form>
     </section>
   </main>
 

@@ -131,8 +131,8 @@ document.getElementById("order-form").addEventListener("submit", (event) => {
 
 // Ulasan bersama memakai Supabase. Isi URL dan anon key setelah membuat project Supabase.
 // Hanya ulasan berstatus "approved" yang tampil publik; ulasan baru berstatus "pending".
-const SUPABASE_URL = "ISI_URL_PROJECT_SUPABASE";
-const SUPABASE_ANON_KEY = "ISI_ANON_KEY_SUPABASE";
+const SUPABASE_URL = "https://qrodxitwkxwxkdcuuvpr.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_dAiJkYB7oLwVf263Z92tjw_I1PlC8L8";
 const reviewList = document.getElementById("review-list");
 const reviewStatus = document.getElementById("review-status");
 const reviewPackageSelect = document.getElementById("review-package");

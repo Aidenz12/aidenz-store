@@ -18,7 +18,6 @@
     </a>
     <nav aria-label="Navigasi utama">
       <a href="#paket">Paket</a>
-      <a href="#cara">Cara pesan</a>
       <a class="nav-cta" href="#pesan">Pesan sekarang <span>↗</span></a>
     </nav>
   </header>
@@ -31,7 +30,6 @@
         <p class="hero-text">Pilih paket yang cocok, isi username Roblox, lalu lanjutkan pesanan ke admin. Simpel, jelas, dan tanpa ribet.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="#paket">Lihat paket <span>↓</span></a>
-          <a class="text-link" href="#cara">Cara pemesanan <span>↗</span></a>
         </div>
         <div class="trust-row">
           <div class="trust-icon">✓</div>
@@ -60,28 +58,14 @@
         <p>Pilih nominal Robux yang kamu butuhkan. Pastikan detail dan total pesanan dikonfirmasi admin sebelum membayar.</p>
       </div>
       <div class="product-grid" id="product-grid"></div>
-      <p class="small-note">Promo pembukaan toko: diskon sekitar 24%, tersedia paket 280 sampai 2.000 Robux. Harga normal dicoret dan harga promo ditampilkan; paket dan harga tetap dikonfirmasi admin sebelum pembayaran.</p>
-    </section>
-
-    <section class="how-section" id="cara">
-      <div class="section-wrap">
-        <div class="section-heading centered">
-          <div class="eyebrow">MUDAH DALAM 3 LANGKAH</div>
-          <h2>Cara <span>pemesanan</span></h2>
-        </div>
-        <div class="steps">
-          <article class="step-card"><div class="step-number">01</div><div class="step-icon">▦</div><h3>Pilih paket</h3><p>Pilih nominal Robux dan cek harga yang ditampilkan.</p></article>
-          <article class="step-card"><div class="step-number">02</div><div class="step-icon">⌨</div><h3>Isi username</h3><p>Masukkan username Roblox dengan teliti. Jangan isi password.</p></article>
-          <article class="step-card"><div class="step-number">03</div><div class="step-icon">↗</div><h3>Chat admin</h3><p>Pesanan dibuka di WhatsApp untuk pengecekan dan instruksi pembayaran manual.</p></article>
-        </div>
-      </div>
+      <p class="small-note">Promo diskon 30% untuk paket pilihan. Harga akhir ditampilkan pada setiap paket.</p>
     </section>
 
     <section class="section-wrap order-section" id="pesan">
       <div class="order-aside">
         <div class="eyebrow">LET'S GET YOU STARTED</div>
         <h2>Siap buat<br><span>pesanan?</span></h2>
-        <p>Isi detail pesanan, lalu pilih salah satu dari dua opsi: bayar QRIS atau langsung chat admin WhatsApp.</p>
+        <p>Pilih paket dan masukkan username Roblox. QRIS akan ditampilkan otomatis setelah detail pesanan diisi.</p>
         <div class="safety-note"><span>!</span><p><b>Keamanan akun</b><br>Admin tidak memerlukan password Roblox atau kode OTP kamu.</p></div>
       </div>
       <form class="order-form" id="order-form">
@@ -90,26 +74,18 @@
         <input id="roblox-username" name="username" type="text" maxlength="30" placeholder="Contoh: Player123" autocomplete="off" required>
         <label for="package-select">Pilih paket</label>
         <select id="package-select" name="package" required></select>
-        <label for="payment-select">Metode pembayaran pilihan</label>
-        <select id="payment-select" name="payment" required>
-          <option value="">Pilih salah satu opsi</option>
-          <option value="qris">1. Bayar langsung dengan QRIS</option>
-          <option value="whatsapp">2. Chat admin WhatsApp</option>
-        </select>
-        <label for="customer-note">Catatan <span class="optional">opsional</span></label>
-        <textarea id="customer-note" name="note" rows="3" maxlength="250" placeholder="Catatan untuk admin (opsional)"></textarea>
-        <button class="button button-primary submit-button" type="submit">Lanjutkan <span>→</span></button>
-        <p class="form-disclaimer">Pilih QRIS untuk melihat kode pembayaran, atau WhatsApp untuk langsung menghubungi admin. Website tidak memverifikasi pembayaran secara otomatis.</p>
+        <button class="button button-primary submit-button" type="submit">Tampilkan QRIS <span>→</span></button>
+        <p class="form-disclaimer">Jangan masukkan password Roblox atau kode OTP. Pembayaran tetap perlu dicek oleh admin.</p>
         <p class="form-error" id="form-error" role="alert" hidden></p>
-        <p class="form-disclaimer">Setelah lanjut, detail pesanan dan bagian pembayaran akan muncul di bawah.</p>
       </form>
       <section class="payment-panel" id="payment-panel" hidden aria-live="polite">
-        <div class="eyebrow">LANGKAH BERIKUTNYA</div>
-        <h3>QRIS — Selesaikan pembayaran</h3>
-        <p class="payment-intro">Pindai QRIS di bawah menggunakan aplikasi pembayaran yang mendukung QRIS. Pastikan nama merchant dan nominal sesuai sebelum membayar.</p>
+        <div class="eyebrow">PESANAN KAMU</div>
+        <h3>Scan QRIS untuk membayar</h3>
+        <p class="save-status" id="order-summary" role="status"></p>
+        <p class="payment-intro">Detail pesanan sudah siap. Scan QRIS dengan aplikasi pembayaran yang mendukung QRIS, lalu masukkan nominal total yang tertera.</p>
         <div class="qris-image-wrap"><img class="qris-image" src="assets/qris-jaya-sejahtera.jpg" alt="Kode pembayaran QRIS yang disediakan untuk Aidenz Store" loading="lazy"><p class="qris-merchant-note">Periksa nama merchant yang muncul di aplikasi pembayaran sebelum mengonfirmasi.</p></div>
         <div class="payment-total"><span>Total pesanan</span><strong id="payment-total">—</strong></div>
-        <p class="payment-warning">QRIS dapat meminta nominal dimasukkan secara manual. Periksa total pesanan sebelum membayar. Status pembayaran perlu dikonfirmasi admin.</p>
+        <p class="payment-warning">QRIS ini tidak memverifikasi pembayaran otomatis. Pastikan nama merchant dan nominal benar sebelum membayar; konfirmasi pembayaran kepada admin.</p>
         <p class="save-status" id="save-status" role="status"></p>
       </section>
     </section>

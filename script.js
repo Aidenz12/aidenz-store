@@ -8,14 +8,14 @@ const STORE_CONFIG = {
   // Contoh format: 6281234567890
   whatsappNumber: "6282287221371",
 
-  // Harga normal dan harga promo (diskon sekitar 24%, dibulatkan ke ribuan terdekat).
+  // Harga promo diskon 30% (dibulatkan ke ribuan terdekat).
   products: [
-    { id: "rbx-280", name: "280 Robux", normalPrice: 50000, price: 38000, description: "Paket starter", badge: "PROMO BUKA TOKO · 24%" },
-    { id: "rbx-500", name: "500 Robux", normalPrice: 85000, price: 65000, description: "Paket hemat", badge: "PROMO BUKA TOKO · 24%" },
-    { id: "rbx-800", name: "800 Robux", normalPrice: 135000, price: 103000, description: "Pilihan populer", badge: "PROMO BUKA TOKO · 24%" },
-    { id: "rbx-1000", name: "1.000 Robux", normalPrice: 169000, price: 128000, description: "Paket ekstra", badge: "PROMO BUKA TOKO · 24%" },
-    { id: "rbx-1500", name: "1.500 Robux", normalPrice: 249000, price: 189000, description: "Paket pro", badge: "PROMO BUKA TOKO · 24%" },
-    { id: "rbx-2000", name: "2.000 Robux", normalPrice: 329000, price: 250000, description: "Paket terbesar", badge: "PROMO BUKA TOKO · 24%" }
+    { id: "rbx-280", name: "280 Robux", normalPrice: 50000, price: 35000, description: "Paket starter", badge: "DISKON 30%" },
+    { id: "rbx-500", name: "500 Robux", normalPrice: 85000, price: 60000, description: "Paket hemat", badge: "DISKON 30%" },
+    { id: "rbx-800", name: "800 Robux", normalPrice: 135000, price: 95000, description: "Pilihan populer", badge: "DISKON 30%" },
+    { id: "rbx-1000", name: "1.000 Robux", normalPrice: 169000, price: 118000, description: "Paket ekstra", badge: "DISKON 30%" },
+    { id: "rbx-1500", name: "1.500 Robux", normalPrice: 249000, price: 174000, description: "Paket pro", badge: "DISKON 30%" },
+    { id: "rbx-2000", name: "2.000 Robux", normalPrice: 329000, price: 230000, description: "Paket terbesar", badge: "DISKON 30%" }
   ]
 };
 
@@ -82,49 +82,28 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 let currentOrder = null;
 
-function makeOrderMessage(order) {
-  return [
-    "Halo Aidenz Store, saya ingin mengonfirmasi pesanan Robux.", "",
-    `Nomor pesanan: ${order.id}`,
-    `Username Roblox: ${order.username}`,
-    `Paket: ${order.productName}`,
-    `Total: ${rupiah(order.price)}`,
-    `Metode pembayaran pilihan: ${order.payment}`,
-    order.note ? `Catatan: ${order.note}` : "",
-    "Mohon konfirmasi pesanan dan instruksi pembayaran."
-  ].filter(Boolean).join("\n");
-}
-
 document.getElementById("order-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const username = document.getElementById("roblox-username").value.trim();
   const product = STORE_CONFIG.products.find((item) => item.id === select.value);
-  const paymentChoice = document.getElementById("payment-select").value;
-  const note = document.getElementById("customer-note").value.trim();
   const error = document.getElementById("form-error");
   const panel = document.getElementById("payment-panel");
   error.hidden = true;
   error.textContent = "";
   panel.hidden = true;
-  if (!username || !product || !["qris", "whatsapp"].includes(paymentChoice)) {
-    error.textContent = "Mohon isi username, pilih paket, dan pilih salah satu dari dua opsi pembayaran.";
+  if (!username || !product) {
+    error.textContent = "Masukkan username Roblox dan pilih paket terlebih dahulu.";
     error.hidden = false;
     return;
   }
-  const paymentLabel = paymentChoice === "qris" ? "QRIS" : "Chat admin WhatsApp";
   currentOrder = {
     id: `ADZ-${Date.now().toString().slice(-8)}`,
     username, productId: product.id, productName: product.name,
-    price: product.price, payment: paymentLabel, note,
-    createdAt: new Date().toISOString(), status: "Menunggu konfirmasi"
+    price: product.price, payment: "QRIS", createdAt: new Date().toISOString(), status: "Menunggu konfirmasi"
   };
-  if (paymentChoice === "whatsapp") {
-    const url = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodeURIComponent(makeOrderMessage(currentOrder))}`;
-    window.location.href = url;
-    return;
-  }
   document.getElementById("payment-total").textContent = rupiah(product.price);
-  document.getElementById("save-status").textContent = `Nomor pesanan: ${currentOrder.id} · Simpan nomor ini untuk konfirmasi admin.`;
+  document.getElementById("order-summary").textContent = `${currentOrder.id} · Username: ${username} · Paket: ${product.name}`;
+  document.getElementById("save-status").textContent = "Simpan nomor pesanan ini untuk konfirmasi admin setelah pembayaran.";
   panel.hidden = false;
   panel.scrollIntoView({behavior:"smooth", block:"start"});
 });

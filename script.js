@@ -8,7 +8,7 @@ const STORE_CONFIG = {
   // Contoh format: 6281234567890
   whatsappNumber: "6282287221371",
 
-  // Harga promo diskon 30% (dibulatkan ke ribuan terdekat).
+  // Harga normal dan harga promo diskon 30%, dibulatkan ke ribuan terdekat.
   products: [
     { id: "rbx-280", name: "280 Robux", normalPrice: 50000, price: 35000, description: "Paket starter", badge: "DISKON 30%" },
     { id: "rbx-500", name: "500 Robux", normalPrice: 85000, price: 60000, description: "Paket hemat", badge: "DISKON 30%" },
@@ -82,28 +82,81 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 let currentOrder = null;
 
+function makeOrderMessage(order) {
+  return [
+    "Halo Aidenz Store, saya ingin mengonfirmasi pesanan Robux.", "",
+    `Nomor pesanan: ${order.id}`,
+    `Username Roblox: ${order.username}`,
+    `Paket: ${order.productName}`,
+    `Total: ${rupiah(order.price)}`,
+    `Metode pembayaran pilihan: ${order.payment}`,
+    order.note ? `Catatan: ${order.note}` : "",
+    "Mohon konfirmasi pesanan dan instruksi pembayaran."
+  ].filter(Boolean).join("\n");
+}
+
+const ORDER_STORAGE_KEY = "aidenz-store-orders-v1";
+function readOrders() {
+  try { return JSON.parse(localStorage.getItem(ORDER_STORAGE_KEY) || "[]"); }
+  catch (_) { return []; }
+}
+function saveOrder(order) {
+  const orders = readOrders();
+  orders.unshift(order);
+  localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(orders.slice(0, 30)));
+}
+function renderOrderHistory() {
+  const wrap = document.getElementById("order-history");
+  const list = document.getElementById("order-history-list");
+  list.replaceChildren();
+  const orders = readOrders();
+  if (!orders.length) {
+    const p = document.createElement("p");
+    p.textContent = "Belum ada pesanan tersimpan di perangkat ini.";
+    list.appendChild(p);
+  } else {
+    orders.forEach((order) => {
+      const item = document.createElement("article");
+      item.className = "order-history-item";
+      const title = document.createElement("strong");
+      title.textContent = `${order.id} · ${order.productName}`;
+      const details = document.createElement("p");
+      details.textContent = `Username: ${order.username} · Total: ${rupiah(order.price)} · Status: ${order.status}`;
+      item.append(title, details);
+      list.appendChild(item);
+    });
+  }
+  wrap.hidden = false;
+}
+
+document.getElementById("view-orders-button").addEventListener("click", renderOrderHistory);
 document.getElementById("order-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const username = document.getElementById("roblox-username").value.trim();
   const product = STORE_CONFIG.products.find((item) => item.id === select.value);
+  const note = document.getElementById("customer-note").value.trim();
   const error = document.getElementById("form-error");
   const panel = document.getElementById("payment-panel");
   error.hidden = true;
   error.textContent = "";
   panel.hidden = true;
   if (!username || !product) {
-    error.textContent = "Masukkan username Roblox dan pilih paket terlebih dahulu.";
+    error.textContent = "Mohon isi username Roblox dan pilih paket.";
     error.hidden = false;
     return;
   }
   currentOrder = {
     id: `ADZ-${Date.now().toString().slice(-8)}`,
     username, productId: product.id, productName: product.name,
-    price: product.price, payment: "QRIS", createdAt: new Date().toISOString(), status: "Menunggu konfirmasi"
+    price: product.price, payment: "QRIS", note,
+    createdAt: new Date().toISOString(), status: "Menunggu konfirmasi admin"
   };
+  try { saveOrder(currentOrder); }
+  catch (_) { /* Browser storage may be disabled; current order still works. */ }
   document.getElementById("payment-total").textContent = rupiah(product.price);
-  document.getElementById("order-summary").textContent = `${currentOrder.id} · Username: ${username} · Paket: ${product.name}`;
-  document.getElementById("save-status").textContent = "Simpan nomor pesanan ini untuk konfirmasi admin setelah pembayaran.";
+  document.getElementById("save-status").textContent = `Nomor pesanan: ${currentOrder.id} · Simpan nomor ini untuk konfirmasi admin.`;
+  document.getElementById("chat-admin-button").href = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodeURIComponent(makeOrderMessage(currentOrder))}`;
+  document.getElementById("order-history").hidden = true;
   panel.hidden = false;
   panel.scrollIntoView({behavior:"smooth", block:"start"});
 });

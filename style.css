@@ -212,3 +212,14 @@ h2 { font-size: clamp(30px, 4vw, 43px); line-height: 1.1; letter-spacing: -.04em
 .review-form textarea { resize:vertical; }
 .review-form .form-disclaimer { color:#9fb2ca; font-size:12px; line-height:1.7; margin:0; }
 @media(max-width:650px) { .review-form { padding:20px; border-radius:18px; } .review-form .form-heading h3 { font-size:20px; } }
+
+
+/* QRIS-only checkout actions and local order history */
+.payment-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+.payment-actions .button { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; cursor:pointer; }
+.order-history { margin-top:20px; padding:18px; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.025); }
+.order-history h4 { margin:0 0 12px; }
+.order-history-item { padding:12px 0; border-bottom:1px solid var(--line); }
+.order-history-item:last-child { border-bottom:0; }
+.order-history-item p { color:var(--muted); margin:6px 0 0; overflow-wrap:anywhere; }
+@media (max-width:560px) { .payment-actions { flex-direction:column; } .payment-actions .button { width:100%; } }

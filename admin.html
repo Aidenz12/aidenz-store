@@ -10,7 +10,7 @@
 <body><main class="wrap">
 <div class="brand">AIDENZ STORE · PANEL ADMIN</div><h1>Moderasi ulasan</h1><p>Masuk menggunakan akun admin yang sudah diberi izin di Supabase. Hanya ulasan asli yang sesuai pengalaman pelanggan yang sebaiknya disetujui.</p>
 <section id="login-panel" class="panel"><h2>Login admin</h2><form id="login-form"><label for="email">Email admin</label><input id="email" type="email" autocomplete="username" required><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required><div class="row"><button class="primary" type="submit">Masuk</button><a class="btn secondary" href="./">Kembali ke toko</a></div></form></section>
-<section id="dashboard" class="hidden"><div class="panel"><div class="review-top"><div><h2>Ulasan menunggu</h2><p id="signed-in" class="muted"></p></div><button id="logout" class="secondary" type="button">Keluar</button></div><div class="row"><button id="refresh" class="secondary" type="button">Muat ulang</button></div></div><div id="message" class="message" role="status">Memuat ulasan…</div><div id="reviews"></div></section>
+<section id="dashboard" class="hidden"><div class="panel"><div class="review-top"><div><h2>Ulasan menunggu</h2><p id="signed-in" class="muted"></p></div><button id="logout" class="secondary" type="button">Keluar</button></div><div class="row"><button id="refresh" class="secondary" type="button">Muat ulang</button></div></div><div id="message" class="message" role="status">Memuat ulasan…</div><div id="reviews"></div><div class="panel"><h2>Pesanan menunggu pembayaran</h2><p>Tekan ACC hanya setelah pembayaran QRIS benar-benar terlihat masuk di akun merchant.</p><div id="orders-message" class="message">Memuat pesanan…</div><div id="orders"></div></div></section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -19,11 +19,32 @@ const SUPABASE_KEY='sb_publishable_dAiJkYB7oLwVf263Z92tjw_I1PlC8L8';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
 function message(text){$('message').textContent=text;}
-async function showSession(){const {data:{session}}=await db.auth.getSession();const logged=!!session;$('login-panel').classList.toggle('hidden',logged);$('dashboard').classList.toggle('hidden',!logged);if(logged){$('signed-in').textContent='Login: '+(session.user.email||'admin');await loadReviews();}}
+async function showSession(){const {data:{session}}=await db.auth.getSession();const logged=!!session;$('login-panel').classList.toggle('hidden',logged);$('dashboard').classList.toggle('hidden',!logged);if(logged){$('signed-in').textContent='Login: '+(session.user.email||'admin');await loadReviews();await loadOrders();}}
 $('login-form').addEventListener('submit',async e=>{e.preventDefault();const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){alert('Login gagal: '+error.message);return;}await showSession();});
 $('logout').addEventListener('click',async()=>{await db.auth.signOut();$('reviews').replaceChildren();await showSession();});
-$('refresh').addEventListener('click',loadReviews);
+$('refresh').addEventListener('click',async()=>{await loadReviews();await loadOrders();});
 async function loadReviews(){message('Memuat ulasan…');$('reviews').replaceChildren();const {data,error}=await db.from('reviews').select('id,name,package_name,rating,review_text,status,created_at').eq('status','pending').order('created_at',{ascending:false});if(error){message('Tidak bisa memuat ulasan. Pastikan akunmu memiliki role admin dan SQL admin sudah dijalankan. Detail: '+error.message);return;}if(!data.length){message('Belum ada ulasan yang menunggu persetujuan.');return;}message('Ada '+data.length+' ulasan menunggu persetujuan.');for(const r of data){const card=document.createElement('article');card.className='review';const top=document.createElement('div');top.className='review-top';const name=document.createElement('strong');name.textContent=r.name+' · '+r.package_name;const status=document.createElement('span');status.className='status';status.textContent=r.status;top.append(name,status);const stars=document.createElement('div');stars.className='stars';stars.textContent='★'.repeat(Math.max(1,Math.min(5,Number(r.rating)||1)) )+'☆'.repeat(5-Math.max(1,Math.min(5,Number(r.rating)||1)));const text=document.createElement('p');text.className='review-text';text.textContent=r.review_text;const date=document.createElement('p');date.className='muted';date.textContent=r.created_at?new Date(r.created_at).toLocaleString('id-ID'):'';const actions=document.createElement('div');actions.className='row';const approve=document.createElement('button');approve.className='approve';approve.textContent='✓ ACC';approve.addEventListener('click',()=>setStatus(r.id,'approved',approve));const reject=document.createElement('button');reject.className='reject';reject.textContent='Tolak';reject.addEventListener('click',()=>setStatus(r.id,'rejected',reject));actions.append(approve,reject);card.append(top,stars,text,date,actions);$('reviews').append(card);}}
+async function loadOrders(){
+  const box=$('orders'), msg=$('orders-message'); box.replaceChildren(); msg.textContent='Memuat pesanan…';
+  const {data,error}=await db.from('orders').select('id,order_code,username,product_name,amount,payment_method,customer_note,status,created_at').in('status',['pending_payment','awaiting_review']).order('created_at',{ascending:false});
+  if(error){msg.textContent='Pesanan belum bisa dimuat. Jalankan supabase-orders-admin.sql di Supabase SQL Editor. Detail: '+error.message;return;}
+  if(!data.length){msg.textContent='Belum ada pesanan yang menunggu konfirmasi.';return;}
+  msg.textContent=data.length+' pesanan menunggu konfirmasi.';
+  for(const o of data){
+    const card=document.createElement('article');card.className='review';
+    const top=document.createElement('div');top.className='review-top';
+    const title=document.createElement('strong');title.textContent=(o.order_code||o.id)+' · '+o.product_name;
+    const badge=document.createElement('span');badge.className='status';badge.textContent='Menunggu Konfirmasi';
+    top.append(title,badge);
+    const details=document.createElement('p');details.className='review-text';details.textContent='Username Roblox: '+o.username+' · Total: Rp'+Number(o.amount).toLocaleString('id-ID')+' · '+o.payment_method+(o.customer_note?' · Catatan: '+o.customer_note:'');
+    const date=document.createElement('p');date.className='muted';date.textContent=o.created_at?new Date(o.created_at).toLocaleString('id-ID'):'';
+    const actions=document.createElement('div');actions.className='row';
+    const acc=document.createElement('button');acc.className='approve';acc.textContent='✓ ACC Pembayaran';
+    acc.addEventListener('click',async()=>{if(!confirm('Pastikan uang benar-benar masuk sebelum ACC. Sudah diperiksa?'))return;acc.disabled=true;const {error}=await db.from('orders').update({status:'paid',verified_at:new Date().toISOString(),verified_by:(await db.auth.getUser()).data.user?.id}).eq('id',o.id);if(error){alert('Gagal ACC: '+error.message);acc.disabled=false;return;}await loadOrders();});
+    const reject=document.createElement('button');reject.className='reject';reject.textContent='Tolak';reject.addEventListener('click',async()=>{if(!confirm('Tolak pesanan ini?'))return;reject.disabled=true;const {error}=await db.from('orders').update({status:'rejected'}).eq('id',o.id);if(error){alert('Gagal menolak: '+error.message);reject.disabled=false;return;}await loadOrders();});
+    actions.append(acc,reject);card.append(top,details,date,actions);box.append(card);
+  }
+}
 async function setStatus(id,status,button){if(!confirm(status==='approved'?'Setujui ulasan ini?':'Tolak ulasan ini?'))return;button.disabled=true;const {error}=await db.from('reviews').update({status}).eq('id',id);if(error){alert('Gagal mengubah status. Pastikan role admin dan policy SQL sudah benar. '+error.message);button.disabled=false;return;}await loadReviews();}
 db.auth.onAuthStateChange(()=>{setTimeout(showSession,0)});showSession();
 </script></body></html>

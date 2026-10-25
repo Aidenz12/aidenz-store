@@ -130,7 +130,7 @@ function renderOrderHistory() {
 }
 
 document.getElementById("view-orders-button").addEventListener("click", renderOrderHistory);
-document.getElementById("order-form").addEventListener("submit", (event) => {
+document.getElementById("order-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const username = document.getElementById("roblox-username").value.trim();
   const product = STORE_CONFIG.products.find((item) => item.id === select.value);
@@ -153,11 +153,54 @@ document.getElementById("order-form").addEventListener("submit", (event) => {
   };
   try { saveOrder(currentOrder); }
   catch (_) { /* Browser storage may be disabled; current order still works. */ }
+  // Send order to Supabase so an authenticated admin can review it.
+  // Status remains pending_payment; clicking "Saya Sudah Bayar" never marks it paid.
+  try {
+    const orderResponse = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
+      method: "POST",
+      headers: supabaseHeaders({ Prefer: "return=minimal" }),
+      body: JSON.stringify({
+        order_code: currentOrder.id,
+        username: currentOrder.username,
+        product_name: currentOrder.productName,
+        amount: currentOrder.price,
+        payment_method: "QRIS",
+        customer_note: currentOrder.note || null,
+        status: "pending_payment"
+      })
+    });
+    if (!orderResponse.ok) {
+      console.warn("Order belum tersimpan ke daftar admin. Jalankan supabase-orders-admin.sql.", await orderResponse.text());
+    }
+  } catch (err) {
+    console.warn("Order belum tersambung ke daftar admin.", err);
+  }
   document.getElementById("payment-total").textContent = rupiah(product.price);
   document.getElementById("save-status").textContent = `Nomor pesanan: ${currentOrder.id} · Simpan nomor ini untuk konfirmasi admin.`;
   document.getElementById("chat-admin-button").href = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodeURIComponent(makeOrderMessage(currentOrder))}`;
   document.getElementById("order-history").hidden = true;
   panel.hidden = false;
+  let paidBtn = document.getElementById("i-paid-button");
+  if (!paidBtn) {
+    paidBtn = document.createElement("button");
+    paidBtn.type = "button";
+    paidBtn.id = "i-paid-button";
+    paidBtn.className = "button button-primary";
+    paidBtn.textContent = "Saya Sudah Bayar";
+    paidBtn.addEventListener("click", async () => {
+      currentOrder.status = "Menunggu Konfirmasi";
+      try { saveOrder(currentOrder); } catch (_) {}
+      const statusLine = document.getElementById("save-status");
+      statusLine.textContent = `Pesanan ${currentOrder.id}: Menunggu Konfirmasi. Admin akan memeriksa pembayaran sebelum menyetujui.`;
+      const msg = makeOrderMessage(currentOrder) + "\\nStatus: Saya sudah melakukan pembayaran, mohon diperiksa.";
+      document.getElementById("chat-admin-button").href = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodeURIComponent(msg)}`;
+      alert("Pesanan ditandai menunggu konfirmasi. Status tidak berubah menjadi berhasil sampai admin memeriksa pembayaran.");
+    });
+    const actions = document.createElement("div");
+    actions.className = "payment-actions";
+    actions.appendChild(paidBtn);
+    panel.appendChild(actions);
+  }
   panel.scrollIntoView({behavior:"smooth", block:"start"});
 });
 

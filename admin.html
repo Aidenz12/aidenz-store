@@ -45,6 +45,6 @@ async function loadOrders(){
     actions.append(acc,reject);card.append(top,details,date,actions);box.append(card);
   }
 }
-async function setStatus(id,status,button){if(!confirm(status==='approved'?'Setujui ulasan ini?':'Tolak ulasan ini?'))return;button.disabled=true;const {error}=await db.from('reviews').update({status}).eq('id',id);if(error){alert('Gagal mengubah status. Pastikan role admin dan policy SQL sudah benar. '+error.message);button.disabled=false;return;}await loadReviews();}
+async function setStatus(id,status,button){if(!confirm(status==='approved'?'Setujui ulasan ini?':'Tolak ulasan ini?'))return;button.disabled=true;const {data,error}=await db.from('reviews').update({status}).eq('id',id).select('id,status').maybeSingle();if(error){alert('Gagal mengubah status ulasan: '+error.message+'\n\nPastikan supabase-admin-setup.sql sudah dijalankan dan login ulang setelah role admin diatur.');button.disabled=false;return;}if(!data){alert('Status ulasan tidak berubah karena baris tidak ditemukan atau izin RLS menolak update. Jalankan ulang supabase-admin-setup.sql di Supabase, lalu keluar dan login kembali.');button.disabled=false;return;}await loadReviews();}
 db.auth.onAuthStateChange(()=>{setTimeout(showSession,0)});showSession();
 </script></body></html>

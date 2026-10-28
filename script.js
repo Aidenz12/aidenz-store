@@ -8,14 +8,20 @@ const STORE_CONFIG = {
   // Contoh format: 6281234567890
   whatsappNumber: "6282287221371",
 
-  // Harga normal dan harga promo diskon 30%, dibulatkan ke ribuan terdekat.
+  // Harga promo diskon 50%; harga promo = setengah harga normal.
   products: [
-    { id: "rbx-280", name: "280 Robux", normalPrice: 50000, price: 35000, description: "Paket starter", badge: "DISKON 30%" },
-    { id: "rbx-500", name: "500 Robux", normalPrice: 85000, price: 60000, description: "Paket hemat", badge: "DISKON 30%" },
-    { id: "rbx-800", name: "800 Robux", normalPrice: 135000, price: 95000, description: "Pilihan populer", badge: "DISKON 30%" },
-    { id: "rbx-1000", name: "1.000 Robux", normalPrice: 169000, price: 118000, description: "Paket ekstra", badge: "DISKON 30%" },
-    { id: "rbx-1500", name: "1.500 Robux", normalPrice: 249000, price: 174000, description: "Paket pro", badge: "DISKON 30%" },
-    { id: "rbx-2000", name: "2.000 Robux", normalPrice: 329000, price: 230000, description: "Paket terbesar", badge: "DISKON 30%" }
+    { id: "rbx-280", name: "280 Robux", normalPrice: 50000, price: 25000, description: "Paket starter", badge: "DISKON 50%" },
+    { id: "rbx-400", name: "400 Robux", normalPrice: 68000, price: 34000, description: "Paket hemat", badge: "DISKON 50%" },
+    { id: "rbx-500", name: "500 Robux", normalPrice: 85000, price: 42500, description: "Paket hemat", badge: "DISKON 50%" },
+    { id: "rbx-600", name: "600 Robux", normalPrice: 102000, price: 51000, description: "Paket pilihan", badge: "DISKON 50%" },
+    { id: "rbx-800", name: "800 Robux", normalPrice: 135000, price: 67500, description: "Pilihan populer", badge: "DISKON 50%" },
+    { id: "rbx-1000", name: "1.000 Robux", normalPrice: 169000, price: 84500, description: "Paket ekstra", badge: "DISKON 50%" },
+    { id: "rbx-1200", name: "1.200 Robux", normalPrice: 203000, price: 101500, description: "Paket ekstra", badge: "DISKON 50%" },
+    { id: "rbx-1500", name: "1.500 Robux", normalPrice: 249000, price: 124500, description: "Paket pro", badge: "DISKON 50%" },
+    { id: "rbx-1700", name: "1.700 Robux", normalPrice: 282000, price: 141000, description: "Paket pro", badge: "DISKON 50%" },
+    { id: "rbx-2000", name: "2.000 Robux", normalPrice: 329000, price: 164500, description: "Paket terbesar", badge: "DISKON 50%" },
+    { id: "rbx-2500", name: "2.500 Robux", normalPrice: 410000, price: 205000, description: "Paket besar", badge: "DISKON 50%" },
+    { id: "rbx-3000", name: "3.000 Robux", normalPrice: 492000, price: 246000, description: "Paket maksimum", badge: "DISKON 50%" }
   ]
 };
 
